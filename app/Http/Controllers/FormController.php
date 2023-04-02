@@ -19,10 +19,14 @@ class FormController extends Controller
         return view('form');
     }
 
-    //
+    /**
+    * Submits the form data and fetches the historical data for the given company symbol and date range
+    * @param Request $request The HTTP request object containing form data
+    * @return mixed Returns a view containing the historical data
+    */
     public function submit(Request $request)
     {
-        
+        // Validating the request 
         $request->validate([
             'company_symbol' => 'required|in:'.implode(',', $this::getCompanySymbolsOrName()),
             'start_date' => 'required|date|before_or_equal:end_date|before_or_equal:'.date('Y-m-d'),
@@ -43,7 +47,7 @@ class FormController extends Controller
         $endDate = $request->input('end_date');
         $email = $request->input('email');
 
-        $companyName = $this::getCompanySymbolsOrName(true, $symbol);
+        $companyName = $this::getCompanySymbolsOrName(true, $symbol); //Getting the company name
 
         $apiData = array('symbol' => $symbol,'region' => 'US');
 
@@ -72,20 +76,29 @@ class FormController extends Controller
     }
 
 
+    /**
+    * Fetches the list of companies' symbols and names from the NASDAQ listing API and returns either the list of symbols or the name of a specific company
+
+    * @param bool|false $name If false, returns the list of all symbols. If true, returns the name of the company based on symbol
+
+    * @param string $symbol The symbol of the company to search for
+
+    * @return array|string The list of symbols or the name of the company
+    */
     public static function getCompanySymbolsOrName ($name = false, $symbol = '') {
         $url = 'https://pkgstore.datahub.io/core/nasdaq-listings/nasdaq-listed_json/data/a5bc7580d6176d60ac0b2142ca8d7df6/nasdaq-listed_json.json';
         $json = file_get_contents($url);
         $data = json_decode($json, true);
         $symbols = [];
-        $name = '';
+        $companyName = '';
         foreach ($data as $item) {
             $symbols[] = $item['Symbol'];
-            if (!empty ($symbol) && $item['Symbol'] == $symbol ) {
-                $name = $item['Company Name'];
+            if ($name && !empty($symbol) && $item['Symbol'] == $symbol ) { //If user wants name of the company then set name based on the symbol
+                $companyName = $item['Company Name'];
             }
         }
         if ($name) {
-            return $name;
+            return $companyName;
         } else {
             return $symbols;
         }

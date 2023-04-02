@@ -38,8 +38,7 @@
             <select class="form-control" id="company_symbol" name="company_symbol" required>
             <option value="">Select a symbol</option>
             <?php 
-            $symbols = \App\Http\Controllers\FormController::getCompanySymbolsOrName();
-            // dd($symbols);
+            $symbols = \App\Http\Controllers\FormController::getCompanySymbolsOrName(); //Getting symbols list to show in dropdown
             foreach ($symbols as $symbol): ?>
                 <option value="<?= $symbol ?>"><?= $symbol ?></option>
             <?php endforeach; ?>
@@ -78,8 +77,6 @@
     </div>
 </div>
 </body>
-  <!-- Your HTML code here -->
-  
   <!-- Add the following JavaScript code -->
   <script>
     $(document).ready(function() {
@@ -99,7 +96,7 @@
 
       // Initialize the datepicker for the End Date field
       $('#end_date').datepicker({
-        maxDate: 0, // Set the minimum date to today
+        maxDate: 0, // Set the max date to today
         onSelect: function(selectedDate) {
           // Set the Start Date field's maximum date to the End Date field's selected date
           $('#start_date').datepicker('option', 'maxDate', selectedDate);
